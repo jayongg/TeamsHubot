@@ -17,12 +17,14 @@ module.exports = (robot) ->
   #robot.respond /<<REGEX>>/i, (res) ->
 
   # Admin only commands #################################
-  # Authorize a user to send commands to hubot  
+  # Authorize a user to send commands to hubot
   robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
-    #console.log("==============================================")
-    #console.log(res.message)
     user = res.match[1]
     admins = robot.brain.get("admins")
+
+    # Don't do anything if authorization should not occur
+    if admins is null
+      return
 
     # Check the user is an admin
     if !admins.includes(res.message.user.aadObjectId)
@@ -44,6 +46,10 @@ module.exports = (robot) ->
     sender = res.message.user.aadObjectId
     user = res.match[1]
     admins = robot.brain.get("admins")
+
+    # Don't do anything if authorization should not occur
+    if admins is null
+      return
 
     # Check that user is an admin
     if !admins.includes(sender)
@@ -77,6 +83,10 @@ module.exports = (robot) ->
   robot.respond /make ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) an admin/i, (res) ->
     admins = robot.brain.get("admins")
 
+    # Don't do anything if authorization should not occur
+    if admins is null
+      return
+
     # Check the user is an admin
     if !admins.includes(res.message.user.aadObjectId)
       res.send "Only admins can add admins"
@@ -102,6 +112,10 @@ module.exports = (robot) ->
   robot.respond /remove ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) from admins/i, (res) ->
     admins = robot.brain.get("admins")
     sender = res.message.user.aadObjectId
+    
+    # Don't do anything if authorization should not occur
+    if admins is null
+      return
 
     # Check the user is an admin
     if !admins.includes(sender)
@@ -166,6 +180,11 @@ module.exports = (robot) ->
   # List admins
   robot.respond /admins/i, (res) ->
     admins = robot.brain.get("admins")
+
+    # Don't do anything if authorization should not occur
+    if admins is null
+      return
+
     if admins.length > 0
       text = ""
       for i in [0...admins.length]
@@ -182,6 +201,11 @@ module.exports = (robot) ->
   # List authorized users
   robot.respond /authorized users/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
+
+    # Don't do anything if authorization should not occur
+    if authorizedUsers is null
+      return
+
     if authorizedUsers.length > 0
       text = ""
       for i in [0...authorizedUsers.length]
