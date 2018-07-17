@@ -1,0 +1,36 @@
+{
+  "name": "hubot",
+  "version": "0.0.0",
+  "private": true,
+  "author": "t-memend",
+  "description": "A simple helpful robot for your Company",
+  "dependencies": {
+    "@microsoft/microsoft-graph-client": "^1.0.0",
+    "botbuilder": "^3.15.0",
+    "hubot": "^2.19.0",
+    "hubot-auth": "^2.1.0",
+    "hubot-botframework": "file:BotFramework-Hubot",
+    "hubot-diagnostics": "0.0.2",
+    "hubot-google-images": "^0.2.7",
+    "hubot-google-translate": "^0.2.1",
+    "hubot-help": "^0.2.2",
+    "hubot-heroku-keepalive": "^1.0.3",
+    "hubot-maps": "0.0.3",
+    "hubot-pugme": "^0.1.1",
+    "hubot-redis-brain": "0.0.4",
+    "hubot-rules": "^0.1.2",
+    "hubot-scripts": "^2.17.2",
+    "hubot-shipit": "^0.2.1"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "hubot-test-helper": "^1.9.0",
+    "mocha": "^5.2.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
