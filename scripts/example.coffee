@@ -10,7 +10,6 @@
 # Author:
 #   t-memend
 
-
 BotBuilder = require('botbuilder')
 
 module.exports = (robot) ->
