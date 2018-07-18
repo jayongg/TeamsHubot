@@ -264,10 +264,13 @@ module.exports = (robot) ->
       # your code here, knowing it was successful
       console.log(res)
   
-  # *** Testing sending back card
-  #robot.respond /card/i, (res) ->
-    
+  # *** Testing sending back hero card
+  robot.respond /hero card me/i, (res) ->
+    res.send("unicorns")
 
+  # *** Testing sending back adaptive card
+  robot.respond /adaptive card me/i, (res) ->
+    res.send("dragons")
 
   # Badgers
   robot.hear /badger/i, (res) ->
