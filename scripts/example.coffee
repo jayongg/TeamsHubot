@@ -13,48 +13,45 @@
 BotBuilder = require('botbuilder')
 
 module.exports = (robot) ->
-  # Set up admin & authorized user lists
-  
-  # @?(.+) ha(?:s|ve) (["'\w: -_]+) role
-  #robot.respond /<<REGEX>>/i, (res) ->
-
   # Admin only commands #################################
   # Authorize a user to send commands to hubot
   robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
     user = res.match[1]
-    admins = robot.brain.get("admins")
+    authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization should not occur
-    if admins is null
+    if authorizedUsers is null
       return
 
     # Check the user is an admin
-    if !admins.includes(res.message.user.aadObjectId)
+    if !authorizedUsers[res.message.user.aadObjectId]
       res.send "Only admins can authorize users"
       return
-    authorizedUsers = robot.brain.get("authorizedUsers")
-    
+
     # Check the user hasn't already been authorized
-    if authorizedUsers.includes(user)
+    if authorizedUsers[user]?
       res.send(user + " is already authorized")
       return
-    authorizedUsers.push(user)
+  
+    # Users are not an admin by default
+    authorizedUsers[user] = false
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
     res.send(user + " has been authorized")
+
 
   # Remove authorization of a user to send commands to hubot
   robot.respond /unauthorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
     sender = res.message.user.aadObjectId
     user = res.match[1]
-    admins = robot.brain.get("admins")
+    authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization should not occur
-    if admins is null
+    if authorizedUsers is null
       return
 
-    # Check that user is an admin
-    if !admins.includes(sender)
+    # Check the sender is an admin
+    if !authorizedUsers[res.message.user.aadObjectId]
       res.send "Only admins can unauthorize users"
       return
 
@@ -62,68 +59,62 @@ module.exports = (robot) ->
     if sender == user
       res.send "You can't unauthorize yourself!"
       return
-    authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Check that user isn't already unauthorized
-    if (!authorizedUsers.includes(user))
+    if authorizedUsers[user] is undefined
       res.send "#{user} already isn't authorized"
       return
-    authorizedUsers = (u for u in authorizedUsers when u != user)
+    
+    delete authorizedUsers[user]
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
     res.send(user + " has been unauthorized")
 
-    # If the person being unauthorized is also an admin, remove them from admins too
-    if admins.includes(user)
-      admins = (u for u in admins when u != user)
-      robot.brain.remove("admins")
-      robot.brain.set("admins", admins)
-      res.send(user + " was also removed as an admin")
-
 
   # Make a user an admin
   robot.respond /make ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) an admin/i, (res) ->
-    admins = robot.brain.get("admins")
+    authorizedUsers = robot.brain.get("authorizedUsers")
+    user = res.match[1]
 
     # Don't do anything if authorization should not occur
-    if admins is null
+    if authorizedUsers is null
       return
 
-    # Check the user is an admin
-    if !admins.includes(res.message.user.aadObjectId)
+    # Check the sender is an admin
+    if !authorizedUsers[res.message.user.aadObjectId]
       res.send "Only admins can add admins"
       return
-    user = res.match[1]
-    authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Only authorized users can be made admins
-    if !authorizedUsers.includes(user)
+    if authorizedUsers[user] is undefined
       res.send "#{user} isn't authorized. Please authorize them first"
       return
 
     # Check user isn't already an admin
-    if admins.includes(user)
+    if authorizedUsers[user]
       res.send("#{user} is already an admin")
       return
-    admins.push(user)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
+    
+    authorizedUsers[user] = true
+    robot.brain.remove("authorizedUsers")
+    robot.brain.set("authorizedUsers", authorizedUsers)
     res.send(user + " is now an admin")
+
   
   # Remove an admin
   robot.respond /remove ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) from admins/i, (res) ->
-    admins = robot.brain.get("admins")
+    authorizedUsers = robot.brain.get("authorizedUsers")
     sender = res.message.user.aadObjectId
+    user = res.match[1]
     
     # Don't do anything if authorization should not occur
-    if admins is null
+    if authorizedUsers is null
       return
 
-    # Check the user is an admin
-    if !admins.includes(sender)
+    # Check the sender is an admin
+    if !authorizedUsers[res.message.user.aadObjectId]
       res.send "Only admins can remove admins"
       return
-    user = res.match[1]
 
     # Admins can't remove themself
     if sender == user
@@ -131,13 +122,42 @@ module.exports = (robot) ->
       return
 
     # Check user is an admin
-    if !admins.includes(user)
+    if authorizedUsers[user] is undefined || !authorizedUsers[user]
       res.send "#{user} already isn't an admin"
       return
-    admins = (u for u in admins when u != user)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
+
+    authorizedUsers[user] = false
+    robot.brain.remove("authorizedUsers")
+    robot.brain.set("authorizedUsers", authorizedUsers)
     res.send(user + " has been removed as an admin")
+    
+    # admins = robot.brain.get("admins")
+    # sender = res.message.user.aadObjectId
+    
+    # # Don't do anything if authorization should not occur
+    # if admins is null
+    #   return
+
+    # # Check the user is an admin
+    # if !admins.includes(sender)
+    #   res.send "Only admins can remove admins"
+    #   return
+    # user = res.match[1]
+
+    # # Admins can't remove themself
+    # if sender == user
+    #   res.send "You can't remove yourself as an admin"
+    #   return
+
+    # # Check user is an admin
+    # if !admins.includes(user)
+    #   res.send "#{user} already isn't an admin"
+    #   return
+    # admins = (u for u in admins when u != user)
+    # robot.brain.remove("admins")
+    # robot.brain.set("admins", admins)
+    # res.send(user + " has been removed as an admin")
+
 
   # *** For testing utility #####################
   robot.respond /N/i, (res) ->
@@ -181,24 +201,28 @@ module.exports = (robot) ->
   # Lay person commands ######################
   # List admins
   robot.respond /admins/i, (res) ->
-    admins = robot.brain.get("admins")
+    authorizedUsers = robot.brain.get("authorizedUsers")
+    console.log("********HEY********************************")
+    console.log(authorizedUsers is undefined)
+    console.log(authorizedUsers is null)
 
     # Don't do anything if authorization should not occur
-    if admins is null
+    if authorizedUsers is null
       return
 
-    if admins.length > 0
-      text = ""
-      for i in [0...admins.length]
-        user = admins[i]
-        if i == 0
+    text = ""
+    for user, isAdmin of authorizedUsers
+      if isAdmin
+        if text == ""
           text = user
         else
           text = """#{text}
-                  #{user}"""
-      res.send("#{text}")
+                    #{user}"""
+
+    if text == ""
+      res.send("There's no admins")
     else
-      res.send "No admins :("
+      res.send("#{text}")
   
   # List authorized users
   robot.respond /authorized users/i, (res) ->
@@ -208,18 +232,27 @@ module.exports = (robot) ->
     if authorizedUsers is null
       return
 
-    if authorizedUsers.length > 0
-      text = ""
-      for i in [0...authorizedUsers.length]
-        user = authorizedUsers[i]
-        if i == 0
-          text = user
-        else
-          text = """#{text}
-                    #{user}"""
-      res.send("#{text}")
-    else
-      res.send "I'm all alooone"
+    text = ""
+    for user of authorizedUsers
+      if text == ""
+        text = user
+      else
+        text = """#{text}
+                  #{user}"""
+    res.send("#{text}")
+
+    # if authorizedUsers.length > 0
+    #   text = ""
+    #   for i in [0...authorizedUsers.length]
+    #     user = authorizedUsers[i]
+    #     if i == 0
+    #       text = user
+    #     else
+    #       text = """#{text}
+    #                 #{user}"""
+    #   res.send("#{text}")
+    # else
+    #   res.send "I'm all alooone"
   
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->
