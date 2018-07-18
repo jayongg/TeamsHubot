@@ -241,18 +241,6 @@ module.exports = (robot) ->
                   #{user}"""
     res.send("#{text}")
 
-    # if authorizedUsers.length > 0
-    #   text = ""
-    #   for i in [0...authorizedUsers.length]
-    #     user = authorizedUsers[i]
-    #     if i == 0
-    #       text = user
-    #     else
-    #       text = """#{text}
-    #                 #{user}"""
-    #   res.send("#{text}")
-    # else
-    #   res.send "I'm all alooone"
   
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->
