@@ -158,9 +158,6 @@ module.exports = (robot) ->
   # List admins
   robot.respond /admins/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
-    console.log("********HEY********************************")
-    console.log(authorizedUsers is undefined)
-    console.log(authorizedUsers is null)
 
     # Don't do anything if the adapter isn't being used
     if authorizedUsers is null

@@ -13,10 +13,6 @@ helper = new Helper('../scripts/example.coffee')
 describe 'example script', ->
   beforeEach ->
     @room = helper.createRoom(source: 'msteams')
-    # process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212,aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-    # @room.robot.brain.set("authorizedUsers", process.env.HUBOT_TEAMS_INITIAL_ADMINS.split(","))
-    # process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    # @room.robot.brain.set("admins", process.env.HUBOT_TEAMS_INITIAL_ADMINS.split(","))
 
   afterEach ->
     @room.destroy()
