@@ -19,7 +19,7 @@ module.exports = (robot) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -46,7 +46,7 @@ module.exports = (robot) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -76,7 +76,7 @@ module.exports = (robot) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     user = res.match[1]
 
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -107,7 +107,7 @@ module.exports = (robot) ->
     sender = res.message.user.aadObjectId
     user = res.match[1]
     
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -130,73 +130,29 @@ module.exports = (robot) ->
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
     res.send(user + " has been removed as an admin")
-    
-    # admins = robot.brain.get("admins")
-    # sender = res.message.user.aadObjectId
-    
-    # # Don't do anything if authorization should not occur
-    # if admins is null
-    #   return
-
-    # # Check the user is an admin
-    # if !admins.includes(sender)
-    #   res.send "Only admins can remove admins"
-    #   return
-    # user = res.match[1]
-
-    # # Admins can't remove themself
-    # if sender == user
-    #   res.send "You can't remove yourself as an admin"
-    #   return
-
-    # # Check user is an admin
-    # if !admins.includes(user)
-    #   res.send "#{user} already isn't an admin"
-    #   return
-    # admins = (u for u in admins when u != user)
-    # robot.brain.remove("admins")
-    # robot.brain.set("admins", admins)
-    # res.send(user + " has been removed as an admin")
 
 
   # *** For testing utility #####################
   robot.respond /N/i, (res) ->
-    admins = robot.brain.get("admins")
-    admins = (x for x in admins when x != process.env.AADOBJECTID)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
-
     authorizedUsers = robot.brain.get("authorizedUsers")
-    authorizedUsers = (x for x in authorizedUsers when x != process.env.AADOBJECTID)
-    robot.brain.remove("authorizedUsers")
-    robot.brain.set("authorizedUsers", authorizedUsers)
-    console.log(admins)
+    delete authorizedUsers[process.env.AADOBJECTID]
+    console.log(authorizedUsers)
 
   robot.respond /Y/i, (res) ->
-    admins = robot.brain.get("admins")
-    admins.push(process.env.AADOBJECTID)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
-
     authorizedUsers = robot.brain.get("authorizedUsers")
-    authorizedUsers.push(process.env.AADOBJECTID)
-    robot.brain.remove("authorizedUsers")
-    robot.brain.set("authorizedUsers", authorizedUsers)
-    console.log(admins)
+    authorizedUsers[process.env.AADOBJECTID] = true
+    console.log(authorizedUsers)
 
   robot.respond /ln/i, (res) ->
-    admins = robot.brain.get("admins")
-    admins = (x for x in admins when x != process.env.AADOBJECTID)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
-    console.log(admins)
+    authorizedUsers = robot.brain.get("authorizedUsers")
+    authorizedUsers[process.env.AADOBJECTID] = false
+    console.log(authorizedUsers)
 
   robot.respond /ly/i, (res) ->
-    admins = robot.brain.get("admins")
-    admins.push(process.env.AADOBJECTID)
-    robot.brain.remove("admins")
-    robot.brain.set("admins", admins)
-    console.log(admins)
+    authorizedUsers = robot.brain.get("authorizedUsers")
+    authorizedUsers[process.env.AADOBJECTID] = true
+    console.log(authorizedUsers)
+
 
   # Lay person commands ######################
   # List admins
@@ -206,7 +162,7 @@ module.exports = (robot) ->
     console.log(authorizedUsers is undefined)
     console.log(authorizedUsers is null)
 
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -228,7 +184,7 @@ module.exports = (robot) ->
   robot.respond /authorized users/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if authorization should not occur
+    # Don't do anything if the adapter isn't being used
     if authorizedUsers is null
       return
 
@@ -240,7 +196,6 @@ module.exports = (robot) ->
         text = """#{text}
                   #{user}"""
     res.send("#{text}")
-
   
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->

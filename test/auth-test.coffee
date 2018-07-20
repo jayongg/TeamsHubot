@@ -45,8 +45,8 @@ describe 'example script', ->
         'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee': false
       }
 
-  # Testing when auth not set, does nothing
-  it 'when auth not set, admins command does nothing', ->
+  # Testing when adapter isn\'t being used, admins command does nothing
+  it 'when adapter isn\'t being used, admins command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     @room.user.say('Bob Blue', 'hubot admins').then =>
       expect(@room.messages).to.eql [
@@ -76,8 +76,8 @@ describe 'example script', ->
         'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee': false
       }
   
-  # Test when auth not set, authorized users command does nothing
-  it 'when auth not set, authorized users command does nothing', ->
+  # Test when adapter isn't being used, authorized users command does nothing
+  it 'when adapter isn\'t being used, authorized users command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -88,8 +88,8 @@ describe 'example script', ->
       ]
 
   ############################################
-  # Test when auth not set, authorize does nothing
-  it 'when auth not set, authorize command does nothing', ->
+  # Test when adapter isn\'t being used, authorize does nothing
+  it 'when adapter isn\'t being used, authorize command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -177,8 +177,8 @@ describe 'example script', ->
         }
 
   ############################################
-  # Test when auth not set, unauthorize does nothing
-  it 'when auth not set, unauthorize command does nothing', ->
+  # Test when adapter isn\'t being used, unauthorize does nothing
+  it 'when adapter isn\'t being used, unauthorize command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -280,8 +280,8 @@ describe 'example script', ->
 
 
   ############################################
-  # Test when auth not set, remove admins does nothing
-  it 'when auth not set, add admin command does nothing', ->
+  # Test when adapter isn\'t being used, remove admins does nothing
+  it 'when adapter isn\'t being used, add admin command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -379,8 +379,8 @@ describe 'example script', ->
       }
 
   ############################################
-  # Test when auth not set, remove admins does nothing
-  it 'when auth not set, remove admin command does nothing', ->
+  # Test when adapter isn\'t being used, remove admins does nothing
+  it 'when adapter isn\'t being used, remove admin command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
