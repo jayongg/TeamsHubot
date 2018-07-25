@@ -1,7 +1,7 @@
 # Testing hubot commands for adding/removing users and admins. Tests
 # restriction of these commands to only admins.
 # These tests are separate from the hubot-botframework adapter tests, so
-# user restriction in the ability to send commands to hubot is not tested.
+# user restriction in the ability to send commands to hubot is not tested. 
 Helper = require('hubot-test-helper')
 chai = require 'chai'
 
