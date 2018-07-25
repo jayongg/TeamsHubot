@@ -274,6 +274,4 @@ module.exports = (robot) ->
 
   # Testing admins card, for multiline
   robot.respond /list admins/i, (res) ->
-    console.log("WELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
-    console.log(robot)
     res.send "List the admins"
