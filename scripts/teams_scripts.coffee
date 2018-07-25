@@ -4,13 +4,25 @@
 # Dependencies:
 #
 # Configuration:
+# Put environment variables needed to run these here
 # 
-# Commands:
+# Note: Only the commands available to all authorized users are listed in help
+# commands and not admin only commands.
+# Commands: 
+# hubot admins - Lists the designated admins when using hubot with Microsoft Teams
+# hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
 #
 # Author:
 #   t-memend
 
 BotBuilder = require('botbuilder')
+
+# Helper functions
+escapeLessThan = (str) ->
+  return str.replace(/</g, "&lt;")
+
+escapeNewLines = (str) ->
+  return str.replace(/\n/g, "<br/>")
 
 module.exports = (robot) ->
   # Admin only commands #################################
@@ -30,14 +42,14 @@ module.exports = (robot) ->
 
     # Check the user hasn't already been authorized
     if authorizedUsers[user]?
-      res.send(user + " is already authorized")
+      res.send("The user is already authorized")
       return
   
     # Users are not an admin by default
     authorizedUsers[user] = false
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
-    res.send(user + " has been authorized")
+    res.send("The user has been authorized")
 
 
   # Remove authorization of a user to send commands to hubot
@@ -62,13 +74,13 @@ module.exports = (robot) ->
 
     # Check that user isn't already unauthorized
     if authorizedUsers[user] is undefined
-      res.send "#{user} already isn't authorized"
+      res.send "The user already isn't authorized"
       return
     
     delete authorizedUsers[user]
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
-    res.send(user + " has been unauthorized")
+    res.send("The user has been unauthorized")
 
 
   # Make a user an admin
@@ -87,18 +99,18 @@ module.exports = (robot) ->
 
     # Only authorized users can be made admins
     if authorizedUsers[user] is undefined
-      res.send "#{user} isn't authorized. Please authorize them first"
+      res.send "The user isn't authorized. Please authorize them first"
       return
 
     # Check user isn't already an admin
     if authorizedUsers[user]
-      res.send("#{user} is already an admin")
+      res.send("The user is already an admin")
       return
     
     authorizedUsers[user] = true
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
-    res.send(user + " is now an admin")
+    res.send("The user is now an admin")
 
   
   # Remove an admin
@@ -123,13 +135,13 @@ module.exports = (robot) ->
 
     # Check user is an admin
     if authorizedUsers[user] is undefined || !authorizedUsers[user]
-      res.send "#{user} already isn't an admin"
+      res.send "The user already isn't an admin"
       return
 
     authorizedUsers[user] = false
     robot.brain.remove("authorizedUsers")
     robot.brain.set("authorizedUsers", authorizedUsers)
-    res.send(user + " has been removed as an admin")
+    res.send("The user has been removed as an admin")
 
 
   # *** For testing utility #####################
@@ -194,6 +206,46 @@ module.exports = (robot) ->
                   #{user}"""
     res.send("#{text}")
   
+  # List hubot-github commands (minus gho until it doesn't break Bot Framework)
+  robot.respond /list hubot-github commands/i, (res) ->
+    response =
+      type: 'message'
+      address: res?.message?.user?.activity?.address
+
+    heroCard = new BotBuilder.HeroCard()
+    heroCard.title('hubot-github commands')
+    buttons = []
+    text = ""
+    for command in @robot.commands
+      if command.search(" gho ") != -1
+        if text == ""
+            text = command
+        else
+            text = "#{text}<br/>#{command}"
+        parts = command.split(" - ")
+        commandKeywords = parts[0].replace("hubot ", "")
+        console.log(commandKeywords)
+
+        button = new BotBuilder.CardAction.imBack()
+        button.title(escapeLessThan(commandKeywords))
+
+        # Go to lookup table to get value (for multi dialogs)
+        button.value(commandKeywords)
+        buttons.push button
+
+    heroCard.buttons(buttons)
+
+    text = text.replace(/</g, "&lt;")
+    text = text.replace(/\n/g, "<br/>")
+    heroCard.text(text)
+
+    if text != ""
+      response.attachments = [heroCard.toAttachment()]
+      res.send(response)
+    else
+      res.send("No hubot-github commands found")
+    #res.send("Create hubot-github commands card")
+  
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->
     robot.http("https://dev.botframework.com/bots/new")
@@ -215,95 +267,11 @@ module.exports = (robot) ->
   # Badgers
   robot.hear /badger/i, (res) ->
     res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
-  #
-  # robot.respond /open the (.*) doors/i, (res) ->
-  #   doorType = res.match[1]
-  #   if doorType is "pod bay"
-  #     res.reply "I'm afraid I can't let you do that."
-  #   else
-  #     res.reply "Opening #{doorType} doors"
-  #
-  # robot.hear /I like pie/i, (res) ->
-  #   res.emote "makes a freshly baked pie"
-  #
-  # lulz = ['lol', 'rofl', 'lmao']
-  #
-  # robot.respond /lulz/i, (res) ->
-  #   res.send res.random lulz
-  #
-  # robot.topic (res) ->
-  #   res.send "#{res.message.text}? That's a Paddlin'"
-  #
-  #
-  enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
-  # leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
-  #
-  robot.enter (res) ->
-    res.send res.random enterReplies
-  # robot.leave (res) ->
-  #   res.send res.random leaveReplies
-  #
-  # answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
-  #
-  # robot.respond /what is the answer to the ultimate question of life/, (res) ->
-  #   unless answer?
-  #     res.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
-  #     return
-  #   res.send "#{answer}, but what is the question?"
-  #
-  # robot.respond /you are a little slow/, (res) ->
-  #   setTimeout () ->
-  #     res.send "Who you calling 'slow'?"
-  #   , 60 * 1000
-  #
-  # annoyIntervalId = null
-  #
-  # robot.respond /annoy me/, (res) ->
-  #   if annoyIntervalId
-  #     res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
-  #     return
-  #
-  #   res.send "Hey, want to hear the most annoying sound in the world?"
-  #   annoyIntervalId = setInterval () ->
-  #     res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
-  #   , 1000
-  #
-  # robot.respond /unannoy me/, (res) ->
-  #   if annoyIntervalId
-  #     res.send "GUYS, GUYS, GUYS!"
-  #     clearInterval(annoyIntervalId)
-  #     annoyIntervalId = null
-  #   else
-  #     res.send "Not annoying you right now, am I?"
-  #
-  #
-  # robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-  #   room   = req.params.room
-  #   data   = JSON.parse req.body.payload
-  #   secret = data.secret
-  #
-  #   robot.messageRoom room, "I have a secret: #{secret}"
-  #
-  #   res.send 'OK'
-  #
-  # robot.error (err, res) ->
-  #   robot.logger.error "DOES NOT COMPUTE"
-  #
-  #   if res?
-  #     res.reply "DOES NOT COMPUTE"
-  #
-  # robot.respond /have a soda/i, (res) ->
-  #   # Get number of sodas had (coerced to a number).
-  #   sodasHad = robot.brain.get('totalSodas') * 1 or 0
-  #
-  #   if sodasHad > 4
-  #     res.reply "I'm too fizzy.."
-  #
-  #   else
-  #     res.reply 'Sure!'
-  #
-  #     robot.brain.set 'totalSodas', sodasHad+1
-  #
-  # robot.respond /sleep it off/i, (res) ->
-  #   robot.brain.set 'totalSodas', 0
-  #   res.reply 'zzzzz'
+
+  # Testing
+  robot.respond /list commands/i, (res) ->
+    res.send "MS Teams Command list card"
+
+  # Testing admins card, for multiline
+  robot.respond /list admins/i, (res) ->
+    res.send "List the admins"
