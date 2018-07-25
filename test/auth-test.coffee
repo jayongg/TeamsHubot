@@ -133,7 +133,7 @@ describe 'example script', ->
     @room.user.say('Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
         expect(@room.messages).to.eql [
             ['Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
-            ['hubot', 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj has been authorized']
+            ['hubot', 'The user has been authorized']
         ]
         expect(@room.robot.brain.get("authorizedUsers")).to.eql {
           '00000000-1111-2222-3333-555555555555': true
@@ -161,9 +161,9 @@ describe 'example script', ->
       @room.user.say('Mand M', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
         expect(@room.messages).to.eql [
           ['Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
-          ['hubot', 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj has been authorized']
+          ['hubot', 'The user has been authorized']
           ['Mand M', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
-          ['hubot', 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj is already authorized']
+          ['hubot', 'The user is already authorized']
         ]
         expect(@room.robot.brain.get("authorizedUsers")).to.eql {
           '00000000-1111-2222-3333-555555555555': true
@@ -244,7 +244,7 @@ describe 'example script', ->
     @room.user.say('Mand M', 'hubot unauthorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot unauthorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
-        ['hubot', 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj already isn\'t authorized']
+        ['hubot', 'The user already isn\'t authorized']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -267,7 +267,7 @@ describe 'example script', ->
     @room.user.say('Mand M', 'hubot unauthorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot unauthorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee']
-        ['hubot', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee has been unauthorized']
+        ['hubot', 'The user has been unauthorized']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -322,7 +322,7 @@ describe 'example script', ->
     @room.user.say('Jell O', '@hubot make ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', '@hubot make ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj an admin']
-        ['hubot', 'ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj isn\'t authorized. Please authorize them first']
+        ['hubot', 'The user isn\'t authorized. Please authorize them first']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -344,7 +344,7 @@ describe 'example script', ->
     @room.user.say('Jell O', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin']
-        ['hubot', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee is now an admin']
+        ['hubot', 'The user is now an admin']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -366,7 +366,7 @@ describe 'example script', ->
     @room.user.say('Jell O', 'hubot make 00000000-1111-2222-3333-555555555555 an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', 'hubot make 00000000-1111-2222-3333-555555555555 an admin']
-        ['hubot', '00000000-1111-2222-3333-555555555555 is already an admin']
+        ['hubot', 'The user is already an admin']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -385,6 +385,7 @@ describe 'example script', ->
         ['Bob Blue', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins']
       ]
 
+  # Test non-admin can't remove an admin
   it 'non-admin cannot remove an admin', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
     auth =
@@ -442,7 +443,7 @@ describe 'example script', ->
     @room.user.say('Mand M', 'hubot remove aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot remove aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee from admins']
-        ['hubot', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee already isn\'t an admin']
+        ['hubot', 'The user already isn\'t an admin']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': true
@@ -464,7 +465,7 @@ describe 'example script', ->
     @room.user.say('Mand M', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins']
-        ['hubot', '00000000-1111-2222-3333-555555555555 has been removed as an admin']
+        ['hubot', 'The user has been removed as an admin']
       ]
       expect(@room.robot.brain.get("authorizedUsers")).to.eql {
         '00000000-1111-2222-3333-555555555555': false
