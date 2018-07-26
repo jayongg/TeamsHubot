@@ -206,46 +206,6 @@ module.exports = (robot) ->
                   #{user}"""
     res.send("#{text}")
   
-  # List hubot-github commands (minus gho until it doesn't break Bot Framework)
-  robot.respond /list hubot-github commands/i, (res) ->
-    response =
-      type: 'message'
-      address: res?.message?.user?.activity?.address
-
-    heroCard = new BotBuilder.HeroCard()
-    heroCard.title('hubot-github commands')
-    buttons = []
-    text = ""
-    for command in @robot.commands
-      if command.search(" gho ") != -1
-        if text == ""
-            text = command
-        else
-            text = "#{text}<br/>#{command}"
-        parts = command.split(" - ")
-        commandKeywords = parts[0].replace("hubot ", "")
-        console.log(commandKeywords)
-
-        button = new BotBuilder.CardAction.imBack()
-        button.title(escapeLessThan(commandKeywords))
-
-        # Go to lookup table to get value (for multi dialogs)
-        button.value(commandKeywords)
-        buttons.push button
-
-    heroCard.buttons(buttons)
-
-    text = text.replace(/</g, "&lt;")
-    text = text.replace(/\n/g, "<br/>")
-    heroCard.text(text)
-
-    if text != ""
-      response.attachments = [heroCard.toAttachment()]
-      res.send(response)
-    else
-      res.send("No hubot-github commands found")
-    #res.send("Create hubot-github commands card")
-  
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->
     robot.http("https://dev.botframework.com/bots/new")
@@ -275,3 +235,19 @@ module.exports = (robot) ->
   # Testing admins card, for multiline
   robot.respond /list admins/i, (res) ->
     res.send "List the admins"
+
+  ####################################
+  # Commands for receiving answer to user inputs for hubot commands (ex: pug me N, for receiving N)
+  # Allows up to 2048 characters (for now)
+  # *** Think of a better way of receiving user input, LIKE ADAPTIVE CARDS
+  # maybe this can just be a temporary fix until adaptive cards can imback ***
+  # robot.respond /(.+){1,2048}/i, (res) ->
+  #   # When this command is supposed to do nothing
+  #   if context == ""
+  #     return
+    
+  #   if MultiDialogContext == "gho create team"
+  #     teamName = res.match[1]
+
+
+    
