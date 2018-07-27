@@ -11,6 +11,7 @@
 # Commands: 
 # hubot admins - Lists the designated admins when using hubot with Microsoft Teams
 # hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
+# hubot list commands
 #
 # Author:
 #   t-memend
