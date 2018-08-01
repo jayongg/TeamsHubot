@@ -6,14 +6,15 @@
 # Configuration:
 # Put environment variables needed to run these here
 # 
-# Note: Only the commands available to all authorized users are listed in help
-# commands and not admin only commands.
 # Commands: 
 # hubot admins - Lists the designated admins when using hubot with Microsoft Teams
 # hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
 #
 # Author:
 #   t-memend
+
+# Note: Only the commands available to all authorized users are listed in help
+# commands and not admin only commands.
 
 BotBuilder = require('botbuilder')
 
