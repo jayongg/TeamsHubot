@@ -33,35 +33,55 @@ escapeNewLines = (str) ->
 
 module.exports = (robot) ->
     # List hubot-github commands (minus gho until it doesn't break Bot Framework)
-    robot.respond /list hubot-github commands/i, (res) ->
+    robot.respond /list (gho|hubot-github) commands/i, (res) ->
+        # *** Adaptive card with too many follow up buttons
+        # can only show up to 6 and it's cut off
+        # res.send('list (gho|hubot-github) commands')
+
         response = initializeResponse(res)
 
         heroCard = new BotBuilder.HeroCard()
-        heroCard.title('hubot-github commands')
+        heroCard.title('hubot-github (gho) commands')
         buttons = []
         text = ""
         for command in @robot.commands
             if command.search(" gho ") != -1
-                if text == ""
-                    text = command
-                else
-                    text = "#{text}\n#{command}"
                 parts = command.split(" - ")
                 commandKeywords = parts[0].replace("hubot ", "")
 
-                button = new BotBuilder.CardAction.imBack()
-                button.title(escapeLessThan(commandKeywords))
+                commandText = "_" + parts[0] + "_ - " + parts[1]
+                if text == ""
+                    text = commandText
+                else
+                    text = "#{text}\n#{commandText}"
 
-                # Go to lookup table to get value (for multi dialogs)
+                button = new BotBuilder.CardAction.imBack()
+
+                # Create a short version of the command by including only the
+                # start of the command to the first user input marked by ( or <
+                shortQueryEnd = commandKeywords.search(new RegExp("[(<]"))
+                if shortQueryEnd == -1
+                    shortQueryEnd = commandKeywords.length
+                shortQuery = commandKeywords.substring(0, shortQueryEnd)
+                button.title(shortQuery)
+
+                
+                #buttonValue = commandKeywords
                 button.value(commandKeywords)
-                tableValue = ButtonValueLUT[commandKeywords]
-                console.log(tableValue)
-                if tableValue != undefined
-                    console.log("setting to table value")
-                    button.value(tableValue)
+                # If the command needs user input, generate an adaptive
+                # card for it
+                if (shortQuery != commandKeywords)
+                    button.value("generate input card " + shortQuery)
+
+                # ***
+                # Go to lookup table to get value (for multi dialogs)
+                # tableValue = ButtonValueLUT[commandKeywords]
+                # console.log(tableValue)
+                # if tableValue != undefined
+                #     console.log("setting to table value")
+                #     button.value(tableValue)
 
                 buttons.push button
-            
 
         heroCard.buttons(buttons)
 
@@ -74,6 +94,30 @@ module.exports = (robot) ->
             res.send(response)
         else
             res.send("No hubot-github commands found")
+
+    #########################################
+    # Commands for generating adaptive cards with inputs. Used for
+    # menu cards. *** Kind of hacky, only until they allow for rendering
+    # more buttons on an adaptive card
+    robot.respond /generate input card gho list/i, (res) ->
+        res.send("gho list (teams|repos|members)")
+    
+    robot.respond /generate input card gho create team/i, (res) ->
+        res.send("gho create team <team name>")
+
+    robot.respond /generate input card gho create repo/i, (res) ->
+        res.send("gho create repo <repo name>/<private|public>")
+
+    robot.respond /generate input card gho add/i, (res) ->
+        res.send("gho add (members|repos) <members|repos> to team <team name>")
+
+    robot.respond /generate input card gho remove/i, (res) ->
+        res.send("gho remove (repos|members) <members|repos> from team <team name>")
+    
+    robot.respond /generate input card gho delete team/i, (res) ->
+        res.send("gho delete team <team name>")
+
+    ##########################################
 
     # For listing a team/repo/or member
     robot.respond /gho list which/i, (res) ->
