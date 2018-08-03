@@ -37,6 +37,7 @@ module.exports = (robot) ->
         # *** Adaptive card with too many follow up buttons
         # can only show up to 6 and it's cut off
         # res.send('list (gho|hubot-github) commands')
+        # return
 
         response = initializeResponse(res)
 
@@ -49,7 +50,7 @@ module.exports = (robot) ->
                 parts = command.split(" - ")
                 commandKeywords = parts[0].replace("hubot ", "")
 
-                commandText = "_" + parts[0] + "_ - " + parts[1]
+                commandText = "**" + parts[0] + "** - " + parts[1]
                 if text == ""
                     text = commandText
                 else
@@ -465,5 +466,58 @@ module.exports = (robot) ->
                 ]
             }
         }
+        response.attachments = [card]
+        res.send(response)
+
+    robot.respond /list card me/i, (res) ->
+        response = initializeResponse(res)
+        card = {
+            "contentType": "application/vnd.microsoft.teams.card.list",
+            "content": {
+                "title": "Card title",
+                "items": [ {
+                        "type": "file",
+                        "id": "https://contoso.sharepoint.com/teams/new/Shared%20Documents/Report.xslx",
+                        "title": "Report",
+                        "subtitle": "teams > new > design",
+                        "tap": {
+                            "type": "imBack",
+                            "value": "editOnline https://contoso.sharepoint.com/teams/new/Shared%20Documents/Report.xlsx"
+                        }
+                    },
+                    {
+                        "type": "resultItem",
+                        "icon": "https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Trello-128.png",
+                        "title": "Trello title",
+                        "subtitle": "A Trello subtitle",
+                        "tap": {
+                            "type": "openUrl",
+                            "value": "http://trello.com"
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "title": "Manager"
+                    },
+                    {
+                        "type": "person",
+                        "id": "JohnDoe@contoso.com",
+                        "title": "John Doe",
+                        "subtitle": "Manager",
+                        "tap": {
+                            "type": "imBack",
+                            "value": "whois JohnDoe@contoso.com"
+                        }
+                    }
+                ],
+                "buttons": [ {
+                        "type": "imBack",
+                        "title": "Select",
+                        "value": "whois"
+                    }
+                ]
+            }
+        }
+
         response.attachments = [card]
         res.send(response)

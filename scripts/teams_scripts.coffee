@@ -32,7 +32,7 @@ module.exports = (robot) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -59,7 +59,7 @@ module.exports = (robot) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -89,7 +89,7 @@ module.exports = (robot) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     user = res.match[1]
 
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -120,7 +120,7 @@ module.exports = (robot) ->
     sender = res.message.user.aadObjectId
     user = res.match[1]
     
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -172,7 +172,7 @@ module.exports = (robot) ->
   robot.respond /admins/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -194,7 +194,7 @@ module.exports = (robot) ->
   robot.respond /authorized users/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
-    # Don't do anything if the adapter isn't being used
+    # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
       return
 
@@ -206,6 +206,25 @@ module.exports = (robot) ->
         text = """#{text}
                   #{user}"""
     res.send("#{text}")
+
+  #############################
+  # For returning message when unauthorized user tries to send a message
+  robot.respond /return unauthorized user error/i, (res) ->
+    authorizedUsers = robot.brain.get("authorizedUsers")
+
+    # Don't do anything if authorization isn't enabled
+    if authorizedUsers is null
+      return
+
+    text = "You are not authorized to send commands to hubot. Please talk to your admins:"
+    for user, isAdmin of authorizedUsers
+      if isAdmin
+        # if text == ""
+        #   text = user
+        # else
+          text = """#{text}<br>- #{user}"""
+    text = """#{text}<br> to be authorized."""
+    res.send(text)
   
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->

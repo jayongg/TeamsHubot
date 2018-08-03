@@ -7,7 +7,7 @@ chai = require 'chai'
 
 expect = chai.expect
 
-helper = new Helper('../scripts/example.coffee')
+helper = new Helper('../scripts/teams_scripts.coffee')
 
 
 describe 'example script', ->
@@ -41,8 +41,8 @@ describe 'example script', ->
         'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee': false
       }
 
-  # Testing when adapter isn\'t being used, admins command does nothing
-  it 'when adapter isn\'t being used, admins command does nothing', ->
+  # Testing when authorization isn't enabled, admins command does nothing
+  it 'when authorization isn\'t enabled, admins command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     @room.user.say('Bob Blue', 'hubot admins').then =>
       expect(@room.messages).to.eql [
@@ -73,7 +73,7 @@ describe 'example script', ->
       }
   
   # Test when adapter isn't being used, authorized users command does nothing
-  it 'when adapter isn\'t being used, authorized users command does nothing', ->
+  it 'when authorization isn\'t enabled, authorized users command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -84,8 +84,8 @@ describe 'example script', ->
       ]
 
   ############################################
-  # Test when adapter isn\'t being used, authorize does nothing
-  it 'when adapter isn\'t being used, authorize command does nothing', ->
+  # Test when authorization isn't enabled, authorize does nothing
+  it 'when authorization isn\'t enabled, authorize command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -173,8 +173,8 @@ describe 'example script', ->
         }
 
   ############################################
-  # Test when adapter isn\'t being used, unauthorize does nothing
-  it 'when adapter isn\'t being used, unauthorize command does nothing', ->
+  # Test when authorization isn't enabled, unauthorize does nothing
+  it 'when authorization isn\'t enabled, unauthorize command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -276,8 +276,8 @@ describe 'example script', ->
 
 
   ############################################
-  # Test when adapter isn\'t being used, remove admins does nothing
-  it 'when adapter isn\'t being used, add admin command does nothing', ->
+  # Test when authorization isn't enabled, remove admins does nothing
+  it 'when authorization isn\'t enabled, add admin command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -375,8 +375,8 @@ describe 'example script', ->
       }
 
   ############################################
-  # Test when adapter isn\'t being used, remove admins does nothing
-  it 'when adapter isn\'t being used, remove admin command does nothing', ->
+  # Test when authorization isn't enabled, remove admins does nothing
+  it 'when authorization isn\'t enabled, remove admin command does nothing', ->
     process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
