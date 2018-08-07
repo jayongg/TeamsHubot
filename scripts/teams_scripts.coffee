@@ -226,6 +226,12 @@ module.exports = (robot) ->
     text = """#{text}<br> to be authorized."""
     res.send(text)
   
+  # For returning message when authorization is enabled and a message from a source
+  # that doesn't support authorization is received
+  robot.respond /return source authorization not supported error/i, (res) ->
+    console.log("IN UNSUPPORTED AUTH ERROR")
+    res.send("Authorization isn't supported for this channel")
+
   # *** Testing getting page
   robot.respond /setup Teams/i, (res) ->
     robot.http("https://dev.botframework.com/bots/new")
