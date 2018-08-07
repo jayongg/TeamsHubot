@@ -14,6 +14,7 @@
 #   t-memend
 
 BotBuilder = require('botbuilder')
+BotBuilderTeams = require 'botbuilder-teams'
 ButtonValueLUT = require('./button_value_LUT')
 
 
@@ -50,13 +51,14 @@ module.exports = (robot) ->
                 parts = command.split(" - ")
                 commandKeywords = parts[0].replace("hubot ", "")
 
-                commandText = "**" + parts[0] + "** - " + parts[1]
+                commandText = parts[0] + " - " + parts[1]
                 if text == ""
                     text = commandText
                 else
                     text = "#{text}\n#{commandText}"
 
-                button = new BotBuilder.CardAction.imBack()
+                # button = new BotBuilder.CardAction.imBack()
+                button = new BotBuilder.CardAction.invoke()
 
                 # Create a short version of the command by including only the
                 # start of the command to the first user input marked by ( or <
@@ -66,13 +68,21 @@ module.exports = (robot) ->
                 shortQuery = commandKeywords.substring(0, shortQueryEnd)
                 button.title(shortQuery)
 
-                
-                #buttonValue = commandKeywords
-                button.value(commandKeywords)
+                # *** changing to invoke action
+                invokePayload = {
+                    'hubotMessage': commandKeywords
+                }
                 # If the command needs user input, generate an adaptive
                 # card for it
                 if (shortQuery != commandKeywords)
-                    button.value("generate input card " + shortQuery)
+                    invokePayload.hubotMessage = "generate input card " + shortQuery
+                button.value(invokePayload)
+
+                # button.value(commandKeywords)
+                # # If the command needs user input, generate an adaptive
+                # # card for it
+                # if (shortQuery != commandKeywords)
+                #     button.value("generate input card " + shortQuery)
 
                 # ***
                 # Go to lookup table to get value (for multi dialogs)
@@ -471,6 +481,7 @@ module.exports = (robot) ->
 
     robot.respond /list card me/i, (res) ->
         response = initializeResponse(res)
+
         card = {
             "contentType": "application/vnd.microsoft.teams.card.list",
             "content": {
@@ -481,8 +492,10 @@ module.exports = (robot) ->
                         "title": "Report",
                         "subtitle": "teams > new > design",
                         "tap": {
-                            "type": "imBack",
-                            "value": "editOnline https://contoso.sharepoint.com/teams/new/Shared%20Documents/Report.xlsx"
+                            "type": "invoke",
+                            "value": {
+                                'hubotMessage': "generate input card gho list "
+                            }
                         }
                     },
                     {
