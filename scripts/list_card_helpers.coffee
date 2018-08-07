@@ -11,11 +11,11 @@ initializeListCard = () ->
             }
         }
 
-addListItem = (listCard) ->
-    
+addListItem = (listCard, title) ->
+    console.log("To be implemented")
 
 
 module.exports = {
     initializeListCard,
-    createListItem
+    addListItem
 }
