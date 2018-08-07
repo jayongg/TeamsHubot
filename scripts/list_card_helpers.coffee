@@ -1,21 +1,35 @@
+# 
 # Helper functions for constructing Microsoft Teams List Cards
+# 
+# 
 
 
-initializeListCard = () ->
+initializeListCard = (title) ->
     card = {
             "contentType": "application/vnd.microsoft.teams.card.list",
             "content": {
-                "title": "Card title",
-                "items": [],
-                "buttons": []
+                "title": "#{title}"
             }
         }
+    return card
 
-addListItem = (listCard, title) ->
-    console.log("To be implemented")
+createListResultItem = (title, subtitle, hubotMessage) ->
+    item = {
+        "type": "resultItem",
+        # "icon": "https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Trello-128.png",
+        "title": "#{title}",
+        "subtitle": "#{subtitle}",
+        "tap": {
+            "type": "invoke",
+            "value": {
+                'hubotMessage': "#{hubotMessage}"
+            }
+        }
+    }
+    return item
 
 
 module.exports = {
     initializeListCard,
-    addListItem
+    createListResultItem
 }
