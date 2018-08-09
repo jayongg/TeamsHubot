@@ -1,14 +1,13 @@
 # Description:
-#   Example scripts for you to examine and try out.
+#   Scripts for controlling authorization with Teams for use with the Botframework adapter
 #
 # Dependencies:
 #
 # Configuration:
-# Put environment variables needed to run these here
 # 
 # Commands: 
-# hubot admins - Lists the designated admins when using hubot with Microsoft Teams
-# hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
+#   hubot admins - Lists the designated admins when using hubot with Microsoft Teams
+#   hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
 #
 # Author:
 #   t-memend
@@ -17,13 +16,6 @@
 # commands and not admin only commands.
 
 BotBuilder = require('botbuilder')
-
-# Helper functions
-escapeLessThan = (str) ->
-  return str.replace(/</g, "&lt;")
-
-escapeNewLines = (str) ->
-  return str.replace(/\n/g, "<br/>")
 
 module.exports = (robot) ->
   # Admin only commands #################################
@@ -145,29 +137,7 @@ module.exports = (robot) ->
     res.send("The user has been removed as an admin")
 
 
-  # *** For testing utility #####################
-  robot.respond /N/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-    delete authorizedUsers[process.env.AADOBJECTID]
-    console.log(authorizedUsers)
-
-  robot.respond /Y/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-    authorizedUsers[process.env.AADOBJECTID] = true
-    console.log(authorizedUsers)
-
-  robot.respond /ln/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-    authorizedUsers[process.env.AADOBJECTID] = false
-    console.log(authorizedUsers)
-
-  robot.respond /ly/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-    authorizedUsers[process.env.AADOBJECTID] = true
-    console.log(authorizedUsers)
-
-
-  # Lay person commands ######################
+  # Authorized User commands ######################
   # List admins
   robot.respond /admins/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
@@ -222,58 +192,24 @@ module.exports = (robot) ->
         # if text == ""
         #   text = user
         # else
-          text = """#{text}<br>- #{user}"""
-    text = """#{text}<br> to be authorized."""
+          text = """#{text}<br/>- #{user}"""
+    text = """#{text}<br/>to be authorized."""
     res.send(text)
   
   # For returning message when authorization is enabled and a message from a source
   # that doesn't support authorization is received
   robot.respond /return source authorization not supported error/i, (res) ->
-    console.log("IN UNSUPPORTED AUTH ERROR")
+    authorizedUsers = robot.brain.get("authorizedUsers")
+
+    # Don't do anything if authorization isn't enabled
+    if authorizedUsers is null
+      return
+
     res.send("Authorization isn't supported for this channel")
-
-  # *** Testing getting page
-  robot.respond /setup Teams/i, (res) ->
-    robot.http("https://dev.botframework.com/bots/new")
-    .get() (err, res, body) ->
-      if err
-        res.send "Encountered an error :( #{err}"
-        return
-      # your code here, knowing it was successful
-      console.log(res)
-  
-  # *** Testing sending back hero card
-  robot.respond /hero card me/i, (res) ->
-    res.send("unicorns")
-
-  # *** Testing sending back adaptive card
-  robot.respond /adaptive card me/i, (res) ->
-    res.send("dragons")
 
   # Badgers
   robot.hear /badger/i, (res) ->
     res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
-
-  # Testing
-  robot.respond /list commands/i, (res) ->
-    res.send "MS Teams Command list card"
-
-  # Testing admins card, for multiline
-  robot.respond /list admins/i, (res) ->
-    res.send "List the admins"
-
-  ####################################
-  # Commands for receiving answer to user inputs for hubot commands (ex: pug me N, for receiving N)
-  # Allows up to 2048 characters (for now)
-  # *** Think of a better way of receiving user input, LIKE ADAPTIVE CARDS
-  # maybe this can just be a temporary fix until adaptive cards can imback ***
-  # robot.respond /(.+){1,2048}/i, (res) ->
-  #   # When this command is supposed to do nothing
-  #   if context == ""
-  #     return
-    
-  #   if MultiDialogContext == "gho create team"
-  #     teamName = res.match[1]
 
 
     

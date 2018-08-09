@@ -4,21 +4,16 @@
 # Dependencies:
 #
 # Configuration:
-# Put environment variables needed to run these here
 # 
-# Note: Only the commands available to all authorized users are listed in help
-# commands and not admin only commands.
 # Commands: 
-#
+#   hubot list (gho|hubot-github) commands - Displays a card with buttons to run any command in the hubot-github package
 # Author:
 #   t-memend
 
 BotBuilder = require('botbuilder')
 ListCardHelpers = require('./list_card_helpers')
 
-
 # Helper functions
-
 initializeResponse = (res) ->
     response =
             type: 'message'
@@ -42,12 +37,11 @@ constructShortQuery = (commandKeywords) ->
     return commandKeywords.substring(0, shortQueryEnd)
 
 module.exports = (robot) ->
-    # List hubot-github commands (minus gho until it doesn't break Bot Framework)
+    # List hubot-github commands
     robot.respond /list (gho|hubot-github) commands/i, (res) ->
-        # *** Adaptive card with too many follow up buttons
-        # can only show up to 6 and it's cut off
-        # res.send('list (gho|hubot-github) commands')
-        # return
+        # *** Adaptive card version (uncomment to use adaptive card)
+        res.send('list (gho|hubot-github) commands')
+        return
 
         response = initializeResponse(res)
 
@@ -117,7 +111,6 @@ module.exports = (robot) ->
 
     ###############################################
     # For creating a list card version of the command menu
-    # actions are invokes.
     robot.respond /list card me/i, (res) ->
         response = initializeResponse(res)
 
@@ -144,58 +137,71 @@ module.exports = (robot) ->
                     invokePayload.hubotMessage = "generate input card " + shortQuery
                 item = ListCardHelpers.createListResultItem(shortQuery, parts[1], invokePayload.hubotMessage)
                 items.push(item)
-
         card.content.items = items
-
-        # card = {
-        #     "contentType": "application/vnd.microsoft.teams.card.list",
-        #     "content": {
-        #         "title": "Card title",
-        #         "items": [ {
-        #                 "type": "file",
-        #                 "id": "https://contoso.sharepoint.com/teams/new/Shared%20Documents/Report.xslx",
-        #                 "title": "Report",
-        #                 "subtitle": "teams > new > design",
-        #                 "tap": {
-        #                     "type": "invoke",
-        #                     "value": {
-        #                         'hubotMessage': "generate input card gho list "
-        #                     }
-        #                 }
-        #             },
-        #             {
-        #                 "type": "resultItem",
-        #                 "icon": "https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Trello-128.png",
-        #                 "title": "Trello title",
-        #                 "subtitle": "A Trello subtitle",
-        #                 "tap": {
-        #                     "type": "openUrl",
-        #                     "value": "http://trello.com"
-        #                 }
-        #             },
-        #             {
-        #                 "type": "section",
-        #                 "title": "Manager"
-        #             },
-        #             {
-        #                 "type": "person",
-        #                 "id": "JohnDoe@contoso.com",
-        #                 "title": "John Doe",
-        #                 "subtitle": "Manager",
-        #                 "tap": {
-        #                     "type": "imBack",
-        #                     "value": "whois JohnDoe@contoso.com"
-        #                 }
-        #             }
-        #         ],
-        #         "buttons": [ {
-        #                 "type": "imBack",
-        #                 "title": "Select",
-        #                 "value": "whois"
-        #             }
-        #         ]
-        #     }
-        # }
 
         response.attachments = [card]
         res.send(response)
+    
+    ################################################
+    # For creating a dropdown menu caard version of the command menu
+    robot.respond /dropdown menu/i, (res) ->
+        response = initializeResponse(res)
+
+        card = {
+            'contentType': 'application/vnd.microsoft.card.adaptive'
+            'content': {
+                "type": "AdaptiveCard"
+                "version": "1.0"
+                "body": [
+                    {
+                        'type': 'TextBlock'
+                        'text': "hubot-github (gho) commands"
+                        'speak': "<s>hubot-github (gho) commands</s>"
+                        'weight': 'bolder'
+                        'size': 'large'
+                    }
+                ]
+            }
+        }
+
+        selector = {
+            "type": "Input.ChoiceSet"
+            "id": "dropdown - query0"
+            "style": "compact"
+        }
+        choices = []
+        for command in @robot.commands
+            if command.search(" gho ") != -1
+                parts = command.split(" - ")
+                commandKeywords = parts[0].replace("hubot ", "")
+                shortQuery = constructShortQuery(commandKeywords)
+
+                value = "hubot " + commandKeywords
+                if shortQuery != commandKeywords
+                    value = "hubot generate input card " + shortQuery
+
+                choices.push({
+                    'title': command
+                    'value': value
+                })
+        selector.choices = choices
+        # Set the default value to the first choice
+        selector.value = choices[0].value
+        
+        card.content.body.push(selector)
+        
+        # Add the submit button
+        card.content.actions = [{
+            'type': 'Action.Submit'
+            'title': 'Submit'
+            'speak': '<s>Submit</s>'
+            'data': {
+                'queryPrefix': "dropdown"
+            }
+        }]
+
+        if choices.length > 0
+            response.attachments = [card]
+            res.send(response)
+        else
+            res.send("No hubot-github commands found")

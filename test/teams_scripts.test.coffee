@@ -4,23 +4,13 @@
 # user restriction in the ability to send commands to hubot is not tested. 
 Helper = require('hubot-test-helper')
 chai = require 'chai'
-
 expect = chai.expect
 
 helper = new Helper('../scripts/teams_scripts.coffee')
 
-
-describe 'example script', ->
+describe 'Test authorization commands', ->
   beforeEach ->
     @room = helper.createRoom(source: 'msteams')
-
-  afterEach ->
-    @room.destroy()
-  
-  ############################################
-  # Testing listing admins
-  it 'can list admins', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
     auth = {
       "00000000-1111-2222-3333-555555555555": true
       "88888888-4444-4444-4444-121212121212": true
@@ -28,7 +18,15 @@ describe 'example script', ->
     }
     @room.robot.brain.set("authorizedUsers", auth)
 
+  afterEach ->
+    @room.destroy()
+  
+  ############################################
+  # Testing listing admins
+  it 'can list admins', ->
+    # Setup
 
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot admins').then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot admins']
@@ -43,7 +41,10 @@ describe 'example script', ->
 
   # Testing when authorization isn't enabled, admins command does nothing
   it 'when authorization isn\'t enabled, admins command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot admins').then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot admins']
@@ -52,13 +53,9 @@ describe 'example script', ->
   ############################################
   # Testing listing authorized users
   it 'can list authorized users', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
+    # Setup
 
+    # Action and Assert
     @room.user.say('Bob Blue', '@hubot authorized users').then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', '@hubot authorized users']
@@ -72,9 +69,12 @@ describe 'example script', ->
         'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee': false
       }
   
-  # Test when adapter isn't being used, authorized users command does nothing
+  # Test when authorization isn't enabled, authorized users command does nothing
   it 'when authorization isn\'t enabled, authorized users command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
 
@@ -86,7 +86,10 @@ describe 'example script', ->
   ############################################
   # Test when authorization isn't enabled, authorize does nothing
   it 'when authorization isn\'t enabled, authorize command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
 
@@ -97,16 +100,11 @@ describe 'example script', ->
 
   # Testing non-admin cannot authorize user
   it 'non-admin cannot authorize', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
 
+    # Action and Assert
     @room.user.say('bob', 'hubot authorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', userParams).then =>
       expect(@room.messages).to.eql [
         ['bob', 'hubot authorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee']
@@ -120,16 +118,11 @@ describe 'example script', ->
 
   # Testing admin can authorize user
   it 'admin can authorize', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '00000000-1111-2222-3333-555555555555'
 
+    # Action and Assert
     @room.user.say('Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
         expect(@room.messages).to.eql [
             ['Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
@@ -145,16 +138,11 @@ describe 'example script', ->
 
   # Testing cannot authorize same user twice
   it 'cannot authorize same user twice', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
 
+    # Action and Assert
     @room.user.say('Jell O', 'hubot authorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
       userParams.aadObjectId = '00000000-1111-2222-3333-555555555555'
 
@@ -175,9 +163,12 @@ describe 'example script', ->
   ############################################
   # Test when authorization isn't enabled, unauthorize does nothing
   it 'when authorization isn\'t enabled, unauthorize command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     @room.user.say('Non Admin', 'hubot unauthorize 88888888-4444-4444-4444-121212121212', userParams).then =>
       expect(@room.messages).to.eql [
         ['Non Admin', 'hubot unauthorize 88888888-4444-4444-4444-121212121212']
@@ -185,16 +176,11 @@ describe 'example script', ->
 
   # Testing non-admin cannot unauthorize user
   it 'non-admin cannot unauthorize', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
 
+    # Action and Assert
     @room.user.say('Non Admin', 'hubot unauthorize 88888888-4444-4444-4444-121212121212', userParams).then =>
       expect(@room.messages).to.eql [
         ['Non Admin', 'hubot unauthorize 88888888-4444-4444-4444-121212121212']
@@ -208,16 +194,11 @@ describe 'example script', ->
   
   # Testing admin cannot unauthorize self
   it 'admin cannot unauthorize self', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '00000000-1111-2222-3333-555555555555'
 
+    # Action and Assert
     @room.user.say('Mand M', 'hubot unauthorize 00000000-1111-2222-3333-555555555555', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot unauthorize 00000000-1111-2222-3333-555555555555']
@@ -231,16 +212,11 @@ describe 'example script', ->
 
   # Testing unauthorized user cannot be unauthorized
   it 'already unauthorized user cannot be unauthorized', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
 
+    # Action and Assert
     @room.user.say('Mand M', 'hubot unauthorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot unauthorize ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj']
@@ -254,16 +230,11 @@ describe 'example script', ->
 
   # Testing admin can unauthorize an authorized user
   it 'admin can unauthorize', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '00000000-1111-2222-3333-555555555555'
 
+    # Action and Assert
     @room.user.say('Mand M', 'hubot unauthorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot unauthorize aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee']
@@ -278,9 +249,12 @@ describe 'example script', ->
   ############################################
   # Test when authorization isn't enabled, remove admins does nothing
   it 'when authorization isn\'t enabled, add admin command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin']
@@ -288,15 +262,11 @@ describe 'example script', ->
 
   # Test non-admin cannot add an admin
   it 'non-admin cannot add an admin', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin']
@@ -310,15 +280,11 @@ describe 'example script', ->
 
   # Test admin cannot add unauthorized user as admin
   it 'unauthorized user cannot be made an admin', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '00000000-1111-2222-3333-555555555555'
+
+    # Action and Assert
     @room.user.say('Jell O', '@hubot make ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', '@hubot make ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj an admin']
@@ -332,15 +298,11 @@ describe 'example script', ->
 
   # Test admin can add an authorized user as an admin
   it 'admin can make an authorized user an admin', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '00000000-1111-2222-3333-555555555555'
+
+    # Action and Assert
     @room.user.say('Jell O', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', 'hubot make aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee an admin']
@@ -354,15 +316,11 @@ describe 'example script', ->
 
   # Test admin cannot add someone who's already an admin
   it 'can\'t make someone an admin twice', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
+
+    # Action and Assert
     @room.user.say('Jell O', 'hubot make 00000000-1111-2222-3333-555555555555 an admin', userParams).then =>
       expect(@room.messages).to.eql [
         ['Jell O', 'hubot make 00000000-1111-2222-3333-555555555555 an admin']
@@ -377,9 +335,12 @@ describe 'example script', ->
   ############################################
   # Test when authorization isn't enabled, remove admins does nothing
   it 'when authorization isn\'t enabled, remove admin command does nothing', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = undefined
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins']
@@ -387,15 +348,11 @@ describe 'example script', ->
 
   # Test non-admin can't remove an admin
   it 'non-admin cannot remove an admin', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+
+    # Action and Assert
     @room.user.say('Bob Blue', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Bob Blue', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins']
@@ -409,15 +366,11 @@ describe 'example script', ->
 
   # Test admin cannot remove self as an admin
   it 'admin cannot remove self from admins', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
+
+    # Action and Assert
     @room.user.say('Mand M', 'hubot remove 88888888-4444-4444-4444-121212121212 from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot remove 88888888-4444-4444-4444-121212121212 from admins']
@@ -431,15 +384,11 @@ describe 'example script', ->
 
   # Test admin cannot remove someone as an admin who isn't an admin
   it 'admin cannot remove a non-admin from admins', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth =
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
+
+    # Action and Assert
     @room.user.say('Mand M', 'hubot remove aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot remove aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee from admins']
@@ -453,15 +402,11 @@ describe 'example script', ->
 
   # Test admin can remove an admin
   it 'admin can remove another admin', ->
-    process.env.HUBOT_TEAMS_INITIAL_ADMINS = "00000000-1111-2222-3333-555555555555,88888888-4444-4444-4444-121212121212"
-    auth = 
-      "00000000-1111-2222-3333-555555555555": true
-      "88888888-4444-4444-4444-121212121212": true
-      "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": false
-    @room.robot.brain.set("authorizedUsers", auth)
-
+    # Setup
     userParams = 
         aadObjectId: '88888888-4444-4444-4444-121212121212'
+
+    # Action and Assert
     @room.user.say('Mand M', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins', userParams).then =>
       expect(@room.messages).to.eql [
         ['Mand M', 'hubot remove 00000000-1111-2222-3333-555555555555 from admins']
@@ -472,3 +417,52 @@ describe 'example script', ->
         '88888888-4444-4444-4444-121212121212': true
         'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee': false
       }
+  
+  ############################################
+  # Test when authorization isn't enabled, doesn't return anything
+  it 'when authorization isn\'t enabled, doesn\'t return not authorized error', ->
+    # Setup
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
+    @room.user.say('Mand M', 'hubot return unauthorized user error').then =>
+      expect(@room.messages).to.eql [
+        ['Mand M', 'hubot return unauthorized user error']
+      ]
+
+  # Test returns error with admins included
+  it 'returns not authorized error with list of admins', ->
+    # Setup
+
+    # Action and Assert
+    @room.user.say('Mand M', 'hubot return unauthorized user error').then =>
+      expect(@room.messages).to.eql [
+        ['Mand M', 'hubot return unauthorized user error']
+        ['hubot', 'You are not authorized to send commands to hubot. Please 
+        talk to your admins:<br/>- 00000000-1111-2222-3333-555555555555<br/>- 
+        88888888-4444-4444-4444-121212121212<br/>to be authorized.']
+      ]
+    
+
+
+  # Test when authorization isn't enabled, doesn't return anything
+  it 'when authorization isn\'t enabled, doesn\'t return authorization not supported error', ->
+    # Setup
+    @room.robot.brain.remove("authorizedUsers")
+
+    # Action and Assert
+    @room.user.say('Mand M', 'hubot return source authorization not supported error').then =>
+      expect(@room.messages).to.eql [
+        ['Mand M', 'hubot return source authorization not supported error']
+      ]
+
+  # Test returns message that authorization isn't supported for that channel
+  it 'returns authorization not supported for that channel error', ->
+    # Setup
+
+    # Action and Assert
+    @room.user.say('Mand M', 'hubot return source authorization not supported error').then =>
+      expect(@room.messages).to.eql [
+        ['Mand M', 'hubot return source authorization not supported error']
+        ['hubot', "Authorization isn't supported for this channel"]
+      ]
