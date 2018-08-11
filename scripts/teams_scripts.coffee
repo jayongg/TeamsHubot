@@ -20,7 +20,10 @@ BotBuilder = require('botbuilder')
 module.exports = (robot) ->
   # Admin only commands #################################
   # Authorize a user to send commands to hubot
-  robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
+  #robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
+  # *** For now will go with the cases of UPN's that you know --> ask later about 
+  # actual guidelines
+  robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})/i, (res) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
@@ -29,7 +32,7 @@ module.exports = (robot) ->
       return
 
     # Check the user is an admin
-    if !authorizedUsers[res.message.user.aadObjectId]
+    if !authorizedUsers[res.message.user.userPrincipalName]
       res.send "Only admins can authorize users"
       return
 
@@ -46,8 +49,8 @@ module.exports = (robot) ->
 
 
   # Remove authorization of a user to send commands to hubot
-  robot.respond /unauthorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
-    sender = res.message.user.aadObjectId
+  robot.respond /unauthorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})/i, (res) ->
+    sender = res.message.user.userPrincipalName
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
@@ -56,7 +59,7 @@ module.exports = (robot) ->
       return
 
     # Check the sender is an admin
-    if !authorizedUsers[res.message.user.aadObjectId]
+    if !authorizedUsers[res.message.user.userPrincipalName]
       res.send "Only admins can unauthorize users"
       return
 
@@ -77,7 +80,7 @@ module.exports = (robot) ->
 
 
   # Make a user an admin
-  robot.respond /make ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) an admin/i, (res) ->
+  robot.respond /make ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) an admin/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     user = res.match[1]
 
@@ -86,7 +89,7 @@ module.exports = (robot) ->
       return
 
     # Check the sender is an admin
-    if !authorizedUsers[res.message.user.aadObjectId]
+    if !authorizedUsers[res.message.user.userPrincipalName]
       res.send "Only admins can add admins"
       return
 
@@ -107,9 +110,9 @@ module.exports = (robot) ->
 
   
   # Remove an admin
-  robot.respond /remove ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12}) from admins/i, (res) ->
+  robot.respond /remove ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) from admins/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
-    sender = res.message.user.aadObjectId
+    sender = res.message.user.userPrincipalName
     user = res.match[1]
     
     # Don't do anything if authorization isn't enabled
@@ -117,7 +120,7 @@ module.exports = (robot) ->
       return
 
     # Check the sender is an admin
-    if !authorizedUsers[res.message.user.aadObjectId]
+    if !authorizedUsers[res.message.user.userPrincipalName]
       res.send "Only admins can remove admins"
       return
 
