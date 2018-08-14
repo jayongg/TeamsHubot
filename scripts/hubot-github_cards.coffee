@@ -34,11 +34,11 @@ constructShortQuery = (commandKeywords) ->
     shortQueryEnd = commandKeywords.search(new RegExp("[(<]"))
     if shortQueryEnd == -1
         shortQueryEnd = commandKeywords.length
-    return commandKeywords.substring(0, shortQueryEnd)
+    return commandKeywords.substring(0, shortQueryEnd).trim()
 
 module.exports = (robot) ->
     # List hubot-github commands
-    robot.respond /list (gho|hubot-github) commands/i, (res) ->
+    robot.respond /list (gho|hubot-github) commands$/i, (res) ->
         # *** Adaptive card version (uncomment to use adaptive card)
         res.send('list (gho|hubot-github) commands')
         return
@@ -88,30 +88,9 @@ module.exports = (robot) ->
         else
             res.send("No hubot-github commands found")
 
-    #########################################
-    # Commands for generating adaptive cards with inputs. Used for
-    # menu cards.
-    robot.respond /generate input card gho list/i, (res) ->
-        res.send("gho list (teams|repos|members)")
-    
-    robot.respond /generate input card gho create team/i, (res) ->
-        res.send("gho create team <team name>")
-
-    robot.respond /generate input card gho create repo/i, (res) ->
-        res.send("gho create repo <repo name>/<private|public>")
-
-    robot.respond /generate input card gho add/i, (res) ->
-        res.send("gho add (members|repos) <members|repos> to team <team name>")
-
-    robot.respond /generate input card gho remove/i, (res) ->
-        res.send("gho remove (repos|members) <members|repos> from team <team name>")
-    
-    robot.respond /generate input card gho delete team/i, (res) ->
-        res.send("gho delete team <team name>")
-
     ###############################################
     # For creating a list card version of the command menu
-    robot.respond /list card me/i, (res) ->
+    robot.respond /list card me$/i, (res) ->
         response = initializeResponse(res)
 
         card = ListCardHelpers.initializeListCard(res.message.text)
@@ -129,12 +108,16 @@ module.exports = (robot) ->
 
                 shortQuery = constructShortQuery(commandKeywords)
                 invokePayload = {
+                    # 'hubotMessage': "hubot " + commandKeywords
                     'hubotMessage': commandKeywords
                 }
                 # If the command needs user input, generate an adaptive
                 # card for it
-                if (shortQuery != commandKeywords)
-                    invokePayload.hubotMessage = "generate input card " + shortQuery
+                # if (shortQuery != commandKeywords)
+                #     # Make hubotMessage == commandKeywords to be able to use it to 
+                #     # search queryParts to construct input card
+                #     # invokePayload.hubotMessage = "hubot generate input card " + shortQuery
+                #     invokePayload.hubotMessage = "generate input card " + shortQuery
                 item = ListCardHelpers.createListResultItem(shortQuery, parts[1], invokePayload.hubotMessage)
                 items.push(item)
         card.content.items = items
@@ -143,8 +126,8 @@ module.exports = (robot) ->
         res.send(response)
     
     ################################################
-    # For creating a dropdown menu caard version of the command menu
-    robot.respond /dropdown menu/i, (res) ->
+    # For creating a dropdown menu card version of the command menu
+    robot.respond /dropdown menu$/i, (res) ->
         response = initializeResponse(res)
 
         card = {
@@ -166,7 +149,7 @@ module.exports = (robot) ->
 
         selector = {
             "type": "Input.ChoiceSet"
-            "id": "dropdown - query0"
+            "id": "hubotMessage"
             "style": "compact"
         }
         choices = []
@@ -175,10 +158,7 @@ module.exports = (robot) ->
                 parts = command.split(" - ")
                 commandKeywords = parts[0].replace("hubot ", "")
                 shortQuery = constructShortQuery(commandKeywords)
-
                 value = "hubot " + commandKeywords
-                if shortQuery != commandKeywords
-                    value = "hubot generate input card " + shortQuery
 
                 choices.push({
                     'title': command
@@ -197,6 +177,7 @@ module.exports = (robot) ->
             'speak': '<s>Submit</s>'
             'data': {
                 'queryPrefix': "dropdown"
+                'needsUserInput': 'true'
             }
         }]
 

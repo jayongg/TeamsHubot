@@ -23,7 +23,7 @@ module.exports = (robot) ->
   #robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
   # *** For now will go with the cases of UPN's that you know --> ask later about 
   # actual guidelines
-  robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})/i, (res) ->
+  robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
 
@@ -49,7 +49,7 @@ module.exports = (robot) ->
 
 
   # Remove authorization of a user to send commands to hubot
-  robot.respond /unauthorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})/i, (res) ->
+  robot.respond /unauthorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     sender = res.message.user.userPrincipalName
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
@@ -80,7 +80,7 @@ module.exports = (robot) ->
 
 
   # Make a user an admin
-  robot.respond /make ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) an admin/i, (res) ->
+  robot.respond /make ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) an admin$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     user = res.match[1]
 
@@ -110,7 +110,7 @@ module.exports = (robot) ->
 
   
   # Remove an admin
-  robot.respond /remove ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) from admins/i, (res) ->
+  robot.respond /remove ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) from admins$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     sender = res.message.user.userPrincipalName
     user = res.match[1]
@@ -142,7 +142,7 @@ module.exports = (robot) ->
 
   # Authorized User commands ######################
   # List admins
-  robot.respond /admins/i, (res) ->
+  robot.respond /admins$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
@@ -164,7 +164,7 @@ module.exports = (robot) ->
       res.send("#{text}")
   
   # List authorized users
-  robot.respond /authorized users/i, (res) ->
+  robot.respond /authorized users$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
@@ -182,7 +182,7 @@ module.exports = (robot) ->
 
   #############################
   # For returning message when unauthorized user tries to send a message
-  robot.respond /return unauthorized user error/i, (res) ->
+  robot.respond /return unauthorized user error$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
@@ -201,7 +201,7 @@ module.exports = (robot) ->
   
   # For returning message when authorization is enabled and a message from a source
   # that doesn't support authorization is received
-  robot.respond /return source authorization not supported error/i, (res) ->
+  robot.respond /return source authorization not supported error$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
