@@ -1,7 +1,4 @@
-# 
 # Helper functions for constructing Microsoft Teams List Cards
-# 
-# 
 
 
 initializeListCard = (title) ->

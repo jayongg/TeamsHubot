@@ -20,9 +20,6 @@ BotBuilder = require('botbuilder')
 module.exports = (robot) ->
   # Admin only commands #################################
   # Authorize a user to send commands to hubot
-  #robot.respond /authorize ([a-z0-9]{8}(-[a-z0-9]{4}){3}-[a-z0-9]{12})/i, (res) ->
-  # *** For now will go with the cases of UPN's that you know --> ask later about 
-  # actual guidelines
   robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     user = res.match[1]
     authorizedUsers = robot.brain.get("authorizedUsers")
@@ -179,40 +176,6 @@ module.exports = (robot) ->
         text = """#{text}
                   #{user}"""
     res.send("#{text}")
-
-  #############################
-  # For returning message when unauthorized user tries to send a message
-  robot.respond /return unauthorized user error$/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-
-    # Don't do anything if authorization isn't enabled
-    if authorizedUsers is null
-      return
-
-    text = "You are not authorized to send commands to hubot. Please talk to your admins:"
-    for user, isAdmin of authorizedUsers
-      if isAdmin
-        # if text == ""
-        #   text = user
-        # else
-          text = """#{text}<br/>- #{user}"""
-    text = """#{text}<br/>to be authorized."""
-    res.send(text)
-  
-  # For returning message when authorization is enabled and a message from a source
-  # that doesn't support authorization is received
-  robot.respond /return source authorization not supported error$/i, (res) ->
-    authorizedUsers = robot.brain.get("authorizedUsers")
-
-    # Don't do anything if authorization isn't enabled
-    if authorizedUsers is null
-      return
-
-    res.send("Authorization isn't supported for this channel")
-
-  # Badgers
-  robot.hear /badger/i, (res) ->
-    res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
 
 
     

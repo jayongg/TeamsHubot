@@ -10,7 +10,6 @@
 # Author:
 #   t-memend
 
-BotBuilder = require('botbuilder')
 ListCardHelpers = require('./list_card_helpers')
 
 # Helper functions
@@ -19,14 +18,6 @@ initializeResponse = (res) ->
             type: 'message'
             address: res?.message?.user?.activity?.address
     return response
-
-# Converts < into the HTML escaped version
-escapeLessThan = (str) ->
-  return str.replace(/</g, "&lt;")
-
-# Converts \n into break tags
-escapeNewLines = (str) ->
-  return str.replace(/\n/g, "<br/>")
 
 # Create a short version of the command by including only the
 # start of the command to the first user input marked by ( or <
