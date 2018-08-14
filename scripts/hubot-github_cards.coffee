@@ -1,5 +1,7 @@
 # Description:
-#   Example scripts for you to examine and try out.
+#   Command for listing all of the commands in the hubot-github package. The commands
+#   are shown in a MSTeams List Card which contains buttons for running each of the
+#   commands
 #
 # Dependencies:
 #
