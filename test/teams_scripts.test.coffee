@@ -1,7 +1,11 @@
-# Testing hubot commands for adding/removing users and admins. Tests
-# restriction of these commands to only admins.
-# These tests are separate from the hubot-botframework adapter tests, so
-# user restriction in the ability to send commands to hubot is not tested. 
+# Description:
+#   Testing hubot commands for adding/removing users and admins. Tests
+#   restriction of these commands to only admins.
+#   These tests are separate from the hubot-botframework adapter tests, so
+#   restriction in the ability to send commands to hubot in general from
+#   Teams is not tested.
+
+
 Helper = require('hubot-test-helper')
 chai = require 'chai'
 expect = chai.expect
@@ -417,52 +421,3 @@ describe 'Test authorization commands', ->
         'user2_email_@some.site': true
         'user_3@website.net': false
       }
-  
-  ############################################
-  # Test when authorization isn't enabled, doesn't return anything
-  it 'when authorization isn\'t enabled, doesn\'t return not authorized error', ->
-    # Setup
-    @room.robot.brain.remove("authorizedUsers")
-
-    # Action and Assert
-    @room.user.say('Mand M', 'hubot return unauthorized user error').then =>
-      expect(@room.messages).to.eql [
-        ['Mand M', 'hubot return unauthorized user error']
-      ]
-
-  # Test returns error with admins included
-  it 'returns not authorized error with list of admins', ->
-    # Setup
-
-    # Action and Assert
-    @room.user.say('Mand M', 'hubot return unauthorized user error').then =>
-      expect(@room.messages).to.eql [
-        ['Mand M', 'hubot return unauthorized user error']
-        ['hubot', 'You are not authorized to send commands to hubot. Please 
-        talk to your admins:<br/>- user-1.upn@email.co.blah<br/>- 
-        user2_email_@some.site<br/>to be authorized.']
-      ]
-    
-
-
-  # Test when authorization isn't enabled, doesn't return anything
-  it 'when authorization isn\'t enabled, doesn\'t return authorization not supported error', ->
-    # Setup
-    @room.robot.brain.remove("authorizedUsers")
-
-    # Action and Assert
-    @room.user.say('Mand M', 'hubot return source authorization not supported error').then =>
-      expect(@room.messages).to.eql [
-        ['Mand M', 'hubot return source authorization not supported error']
-      ]
-
-  # Test returns message that authorization isn't supported for that channel
-  it 'returns authorization not supported for that channel error', ->
-    # Setup
-
-    # Action and Assert
-    @room.user.say('Mand M', 'hubot return source authorization not supported error').then =>
-      expect(@room.messages).to.eql [
-        ['Mand M', 'hubot return source authorization not supported error']
-        ['hubot', "Authorization isn't supported for this channel"]
-      ]

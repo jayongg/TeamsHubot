@@ -1,14 +1,17 @@
 # Description:
-#   Command for listing all of the commands in the hubot-github package. The commands
-#   are shown in a MSTeams List Card which contains buttons for running each of the
-#   commands
+#   Command for listing all of the commands in the hubot-github package when using the
+#   botframework adapter. The commands are shown on a Microsoft Teams List Card which
+#   contains buttons for running each of the commands on hubot
 #
 # Dependencies:
+#   
 #
 # Configuration:
-# 
+#   
+#
 # Commands: 
 #   hubot list (gho|hubot-github) commands - Displays a card with buttons to run any command in the hubot-github package
+#
 # Author:
 #   t-memend
 
@@ -22,7 +25,8 @@ initializeResponse = (res) ->
     return response
 
 # Create a short version of the command by including only the
-# start of the command to the first user input marked by ( or <
+# start of the command to the first user input, marked by ( or <.
+# Trims whitespace from the short version of the command.
 constructShortQuery = (commandKeywords) ->
     shortQueryEnd = commandKeywords.search(new RegExp("[(<]"))
     if shortQueryEnd == -1
@@ -30,7 +34,11 @@ constructShortQuery = (commandKeywords) ->
     return commandKeywords.substring(0, shortQueryEnd).trim()
 
 module.exports = (robot) ->
-    # List hubot-github commands
+    # List hubot-github commands on a Microsoft Teams List Card. hubot-github
+    # commands are identified by the prefix 'gho' used for all of the commands
+    # in the package.
+    # Execution of commands on hubot are initiated using invoke actions when a
+    # command is pressed.
     robot.respond /list (gho|hubot-github) commands$/i, (res) ->
         response = initializeResponse(res)
 
@@ -48,11 +56,9 @@ module.exports = (robot) ->
                     text = "#{text}\n#{commandText}"
 
                 shortQuery = constructShortQuery(commandKeywords)
-                invokePayload = {
-                    'hubotMessage': "hubot " + commandKeywords
-                }
 
-                item = ListCardHelpers.createListResultItem(shortQuery, parts[1], invokePayload.hubotMessage)
+                item = ListCardHelpers.createListResultItem(shortQuery, parts[1], \
+                                                            "hubot " + commandKeywords)
                 items.push(item)
         card.content.items = items
 

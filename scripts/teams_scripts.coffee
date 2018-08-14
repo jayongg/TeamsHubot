@@ -1,10 +1,10 @@
 # Description:
-#   Scripts for controlling authorization with Teams for use with the Botframework adapter
+#   Scripts for controlling authorization with Teams for use with the botframework adapter
 #
 # Dependencies:
 #
 # Configuration:
-# 
+#
 # Commands: 
 #   hubot admins - Lists the designated admins when using hubot with Microsoft Teams
 #   hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
@@ -18,7 +18,9 @@
 BotBuilder = require('botbuilder')
 
 module.exports = (robot) ->
-  # Admin only commands #################################
+  # ##########################################
+  # Admin only commands
+
   # Authorize a user to send commands to hubot
   robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     user = res.match[1]
@@ -137,7 +139,9 @@ module.exports = (robot) ->
     res.send("The user has been removed as an admin")
 
 
-  # Authorized User commands ######################
+  # ############################
+  # Authorized User commands
+
   # List admins
   robot.respond /admins$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
@@ -176,6 +180,3 @@ module.exports = (robot) ->
         text = """#{text}
                   #{user}"""
     res.send("#{text}")
-
-
-    
