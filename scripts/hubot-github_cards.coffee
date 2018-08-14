@@ -49,8 +49,7 @@ module.exports = (robot) ->
 
                 shortQuery = constructShortQuery(commandKeywords)
                 invokePayload = {
-                    # 'hubotMessage': "hubot " + commandKeywords
-                    'hubotMessage': commandKeywords
+                    'hubotMessage': "hubot " + commandKeywords
                 }
 
                 item = ListCardHelpers.createListResultItem(shortQuery, parts[1], invokePayload.hubotMessage)
