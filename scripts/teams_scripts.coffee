@@ -23,7 +23,7 @@ module.exports = (robot) ->
 
   # Authorize a user to send commands to hubot
   robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
-    user = res.match[1]
+    user = res.match[1].toLowerCase()
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
@@ -50,7 +50,7 @@ module.exports = (robot) ->
   # Remove authorization of a user to send commands to hubot
   robot.respond /unauthorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     sender = res.message.user.userPrincipalName
-    user = res.match[1]
+    user = res.match[1].toLowerCase()
     authorizedUsers = robot.brain.get("authorizedUsers")
 
     # Don't do anything if authorization isn't enabled
@@ -81,7 +81,7 @@ module.exports = (robot) ->
   # Make a user an admin
   robot.respond /make ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) an admin$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
-    user = res.match[1]
+    user = res.match[1].toLowerCase()
 
     # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
@@ -112,7 +112,7 @@ module.exports = (robot) ->
   robot.respond /remove ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2}) from admins$/i, (res) ->
     authorizedUsers = robot.brain.get("authorizedUsers")
     sender = res.message.user.userPrincipalName
-    user = res.match[1]
+    user = res.match[1].toLowerCase()
     
     # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
