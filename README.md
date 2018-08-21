@@ -26,8 +26,13 @@ In addition to typing the UPN, the user can also be @mentioned in Teams.
 ## Menu Cards
 Menu cards contain all of the commands in a specific package of hubot scripts. To run a specific command from a menu card, click on the command. If the command needs user input, a card will be returned where the user can input the necessary inputs and submit the command.
 
-Currently only menu cards for the [hubot-github](https://github.com/hydal/hubot-github) package is supported. Menu cards for other hubot script package can be added only if card interactions are already defined for the scripts in the Botframework adapter. 
-When adding a new menu card command, use the `list (gho|hubot-github commands` command in `scripts/hubot-github_cards.coffee` as a template.
+Currently only menu cards for the [hubot-github](https://github.com/hydal/hubot-github) package is supported.
+
+Menu cards for other hubot script package can be added only if card interactions are already defined for the scripts in the Botframework adapter. When adding a new menu card command, use the `list (gho|hubot-github) commands` command in `scripts/hubot-github_cards.coffee` as a template.
+
+Also note that the menu card command assumes that hubot is able to parse the package files to incorporate the commands in robot.commands and that these commands use " - " to separate the command from the description of the command such as in the example below:
+
+`hubot some command words with <inputs> and (choice1|choice2)` - A description of the command
 
 ## Contributing
 Add more information here once we learn more about Microsoft Open Source policies
