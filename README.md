@@ -1,12 +1,14 @@
 # hubot-msteams scripts
 
-This repo contains scripts that extend the ability of the [Botframework adapter](https://github.com/Microsoft/BotFramework-Hubot). Commands for controlling authorization and for creating interactive menu command cards are included. For more detailed information on the Botframework adapter's authorization and cards, see [Botframework adapter](https://github.com/Microsoft/BotFramework-Hubot).
+This repo contains scripts that extend the ability of the [Botframework adapter](https://github.com/Microsoft/BotFramework-Hubot). Commands for controlling authorization and for creating interactive menu command cards are included. For more detailed information on the Botframework adapter's authorization and cards, see Botframework adapter.
 
 ## Installation
 To use these scripts, install hubot and the Botframework adapter. These scripts are designed to be used only with the Botframework adapter.
 Until this is published as an npm package, download the repository and add the files in TeamsHubot/scripts/ to your hubot's scripts/ folder. 
 
 ## Dynamic Authorization in Teams
+**NOTE:** As discussed in the [Botframework adapter](https://github.com/Microsoft/BotFramework-Hubot), the user principal names ([UPNs](https://docs.microsoft.com/en-us/windows/desktop/ADSchema/a-userprincipalname)) used for authorization are stored in the hubot brain. If your hubot brain is not persistent, any changes to authorization made using the commands listed here will be reset when hubot is restarted.
+
 When enabling authorization in the Botframework adapter, these commands can be used to dynamically control the list of users authorized to send commands to hubot from Teams. The following commands are provided for use with authorization:
 
 * Restricted to admins:
