@@ -29,7 +29,6 @@ module.exports = (robot) ->
   robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     user = res.match[1].toLowerCase()
     authorizedUsers = robot.brain.get("authorizedUsers")
-    console.log(res.message)
 
     # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
