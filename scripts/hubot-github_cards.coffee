@@ -4,10 +4,10 @@
 #   contains buttons for running each of the commands on hubot
 #
 # Dependencies:
-#   
+#   hubot-botframework adapter
 #
 # Configuration:
-#   
+#   None
 #
 # Commands: 
 #   hubot list (gho|hubot-github) commands - Displays a card with buttons to run any command in the hubot-github package

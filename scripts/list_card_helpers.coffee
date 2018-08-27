@@ -13,7 +13,7 @@ initializeListCard = (title) ->
 createListResultItem = (title, subtitle, hubotMessage) ->
     item = {
         "type": "resultItem",
-        "icon": "https://github.com/jayongg/TeamsHubot/blob/icons/images/GitHub-Mark-64px.png",
+        "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/hubot_github.png",
         "title": "#{title}",
         "subtitle": "#{subtitle}",
         "tap": {
@@ -23,7 +23,6 @@ createListResultItem = (title, subtitle, hubotMessage) ->
             }
         }
     }
-    console.log(item.icon)
     return item
 
 

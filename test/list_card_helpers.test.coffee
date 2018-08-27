@@ -31,6 +31,8 @@ describe 'Test MS Teams List Card helper functions', ->
         expected = {
             "type": "resultItem",
             "title": "another-title",
+            "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                    hubot_github.png",
             "subtitle": "some-description",
             "tap": {
                 "type": "invoke",
