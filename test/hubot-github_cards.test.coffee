@@ -31,6 +31,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "returns a summary of your organization",
                     "tap": {
                         "type": "invoke",
@@ -42,6 +44,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho list",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "returns a list of (members|teams|repos) in your org",
                     "tap": {
                         "type": "invoke",
@@ -53,6 +57,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho list public repos",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "returns a list of your orgs public repos",
                     "tap": {
                         "type": "invoke",
@@ -64,6 +70,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho create team",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "creates a team with the following name",
                     "tap": {
                         "type": "invoke",
@@ -75,6 +83,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho create repo",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "create a repo with the following name and optional status",
                     "tap": {
                         "type": "invoke",
@@ -86,6 +96,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho add",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "adds a comma separated list of members or repos to the given team",
                     "tap": {
                         "type": "invoke",
@@ -97,6 +109,8 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho remove",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
                     "subtitle": "removes comma list of members or repos from the given team",
                     "tap": {
                         "type": "invoke",
@@ -108,7 +122,10 @@ describe 'Test hubot-github Teams commands', ->
                 {
                     "type": "resultItem",
                     "title": "gho delete team",
-                    "subtitle": "deletes the given team from your org (doesn't delete the repos or members from your org)",
+                    "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/\
+                            hubot_github.png",
+                    "subtitle": "deletes the given team from your org (doesn't delete the repos \
+                    or members from your org)",
                     "tap": {
                         "type": "invoke",
                         "value": {
@@ -150,7 +167,7 @@ describe 'Test hubot-github Teams commands', ->
             expect(@room.messages).to.eql [
                 ['Bob Blue', 'hubot list gho commands']
                 ['hubot', expectedResponse]
-            ]   
+            ]
 
     it 'list hubot-github commands should return a proper response with the correct card', ->
         # Setup

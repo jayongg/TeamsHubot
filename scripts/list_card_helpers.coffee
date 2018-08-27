@@ -13,7 +13,7 @@ initializeListCard = (title) ->
 createListResultItem = (title, subtitle, hubotMessage) ->
     item = {
         "type": "resultItem",
-        # "icon": "https://cdn2.iconfinder.com/data/icons/social-icons-33/128/Trello-128.png",
+        "icon": "https://statics.teams.microsoft.com/evergreen-assets/bots/hubot_github.png",
         "title": "#{title}",
         "subtitle": "#{subtitle}",
         "tap": {

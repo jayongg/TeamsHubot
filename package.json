@@ -7,7 +7,6 @@
   "dependencies": {
     "botbuilder": "^3.15.0",
     "hubot": "^3.1.1",
-    "hubot-auth": "^2.1.0",
     "hubot-botframework": "file:BotFramework-Hubot",
     "hubot-diagnostics": "0.0.2",
     "hubot-github": "^0.2.0",
@@ -27,11 +26,9 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "coffee-coverage": "^2.0.1",
     "coffee-script": "^1.12.7",
     "coveralls": "^3.0.2",
     "hubot-test-helper": "^1.9.0",
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "mocha-lcov-reporter": "^1.3.0"
   },

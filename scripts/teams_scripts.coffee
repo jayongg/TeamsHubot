@@ -2,29 +2,34 @@
 #   Scripts for controlling authorization with Teams for use with the botframework adapter
 #
 # Dependencies:
+#    hubot-botframework adapter
 #
 # Configuration:
+#    See the hubot-botframework adapter for details
 #
-# Commands: 
+# Commands:
+#   hubot authorize <user-upn> - Authorizes the user with the given upn to send commands to hubot
+#   hubot unauthorize <user-upn> - Disallows the user with the given upn from sending commands to hubot
+#   hubot make <user-upn> an admin - Makes the authorized user with the given upn able to use authorization commands
+#   hubot remove <user-upn> from admins - Makes the admin with the given upn only an authorized user and not an admin
 #   hubot admins - Lists the designated admins when using hubot with Microsoft Teams
 #   hubot authorized users - Lists the authorized users when using hubot with Microsoft Teams
 #
 # Author:
 #   t-memend
 
-# Note: Only the commands available to all authorized users are listed in help
-# commands and not admin only commands.
 
 BotBuilder = require('botbuilder')
 
 module.exports = (robot) ->
-  # ##########################################
+  ############################################
   # Admin only commands
 
   # Authorize a user to send commands to hubot
   robot.respond /authorize ([a-zA-Z0-9\-_.]+@([a-zA-Z0-9]+)(.([a-zA-Z0-9]+)){1,2})$/i, (res) ->
     user = res.match[1].toLowerCase()
     authorizedUsers = robot.brain.get("authorizedUsers")
+    console.log(res.message)
 
     # Don't do anything if authorization isn't enabled
     if authorizedUsers is null
